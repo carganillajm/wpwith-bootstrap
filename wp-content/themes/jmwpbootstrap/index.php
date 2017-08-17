@@ -1,3 +1,33 @@
+<?php
+    $con = mysqli_connect("localhost","root","");
+    if(!$con){
+        die('could not connect'.mysqli_error());
+    }
+    mysqli_select_db($con,"db_wpwith_bs");
+
+    $sql = $con->query('SELECT * FROM  tblinfo');
+
+    $status = '';
+    $msg = '';
+
+    if(isset($_GET['status'])){
+        $status = $_GET['status'];
+    }
+
+    if($status == "add"){
+        $firstname = $_POST['fname'];
+        $middlename = $_POST['mname'];
+        $lastname = $_POST['lname'];
+
+        $add = $con->query("INSERT INTO tblinfo values (null,'$firstname','$middlename','$lastname')");
+        if(!$add){
+            die('error'. mysqli_error());
+        }else{
+            header("location:index.php");
+        }
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,35 +55,65 @@
 </nav>
   
 <div class="container">
-    <h3>Inverted Navbar</h3>
-    <p>An inverted navbar is black instead of gray.</p>
+    <h3>Add Information</h3>
+
+    <form method="POST" action="index.php?status=add">
+        <table class="table table-bordered">
+            <tr>
+                <td>
+                    <label for="fname">
+                        Firstname
+                    </label> 
+                </td>
+                <td>
+                    <input type="text" name="fname">  
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="mname">
+                        Middlename
+                    </label>
+                </td>
+                <td> 
+                    <input type="text" name="mname">  
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="lname">
+                        Lastname
+                    </label>
+                </td>
+                <td>
+                    <input type="text" name="lname">   
+                </td>
+            </tr>
+        </table>
+        <input type="submit" class="btn  btn-success" value="Submit" name="btn_add">    
+    </form>
+    <hr>
     <table class="table table-hover">
         <thead>
             <tr>
                 <th>Firstname</th>
                 <th>Middlename</th>
                 <th>Lastname</th>
+                <th>Status</th>
             </tr>    
         </thead>
         <tbody>
-            <tr class="info">
-                <th>John Mar</th>
-                <th>Macapobre</th>
-                <th>Carganilla</th>
+            <?php foreach ($sql as $row) { ?>
+            <tr class="info ">
+                <td><?php echo $row['fname'] ?></td>
+                <td><?php echo $row['mname'] ?></td>
+                <td><?php echo $row['lname'] ?></td>
+                <td><a href="index.php?status=edit" role="button" class="btn btn-info">Edit</a>
+                <a href="index.php?status=delete" role="button" class="btn btn-danger">Delete</a></td>
             </tr> 
-            <tr class="info">
-                <th>John Mar</th>
-                <th>Macapobre</th>
-                <th>Carganilla</th>
-            </tr> 
-            <tr class="info">
-                <th>John Mar</th>
-                <th>Macapobre</th>
-                <th>Carganilla</th>
-            </tr>  
+            <?php } ?>
         </tbody>
     </table>
-    <input type="button" class="btn btn-info" value="try!" name="">
 </div>
 
 </body>
